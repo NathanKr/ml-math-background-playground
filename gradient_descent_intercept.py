@@ -98,6 +98,8 @@ def gradient_descent_constant_slope(slope):
     while abs(step_size) > min_step_size:
         step_size = d_ssr_to_d_intercept(slope,intercept) * learning_rate
         intercept = intercept - step_size # i did not see a proof for this
+
+        # ------------ below this is relevant to plot
         intercept_vec.append(intercept)
         _predicted_height = predicted_height(intercept,slope)
         _observed_height = Height
@@ -120,8 +122,8 @@ def gradient_descent_constant_slope(slope):
 
 def gradient_descent():
     intercept = 0
-    slope = 0
-    learning_rate = 0.01
+    slope = 1
+    learning_rate = 0.01 # using 0.1 will not due
     step_size = 1 # just a value to enter the loop
     min_step_size = 0.001
     iteration = 0
@@ -133,6 +135,8 @@ def gradient_descent():
         intercept = intercept - step_size_intercept # i did not see a proof for this
         slope = slope - step_size_slope
         step_size = max(abs(step_size_intercept) , abs(step_size_slope))
+
+        # ------------ below this is relevant to plot
         _predicted_height = predicted_height(intercept,slope)
         _observed_height = Height
         iteration += 1

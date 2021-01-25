@@ -18,6 +18,7 @@ python code to do basic math for machine learning
     <li>the drivative of ssr with respect to intercept is computed and used by gradient descent to compute the value that minimize ssr. The observerd_height (h) is shown per iteration including ssr , step which decrease in every iteration</li>
     <li>it is shown very nicely that when gradient descent is far from the minimal cost the step is large ,but close to the minimal point the step is small</li>
     <li>the algorithm is stoped when step size is smaller that a common threshold of 0.001. in this case it took 8 iterations</li>
+    <li>after learning only intercept while slope kept 0.64 its time to learn slope and intercept</li>
     </ul>
     </td>
   </tr>
