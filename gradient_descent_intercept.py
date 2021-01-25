@@ -23,7 +23,6 @@ def plot_dataset():
 # _predicted_height is h , _observed_height is y
 def sum_of_square_residual(_predicted_height , _observed_height):
     residual = _observed_height - _predicted_height
-    # print("residual : ",residual)
     return np.dot(residual,residual) # sum the square
 
 
@@ -50,18 +49,33 @@ def compute_one_ssr(slope):
     ssr = sum_of_square_residual(_predicted_height,_observed_height)
     print('ssr : ' , ssr)
 
-# ssr is the sum over (y-h)^2
+# ssr is the sum over (y[i])-h[i]))^2
 # d_ssr / d_intercept is equal by the chain rule to (d_ssr / d_h) * (d_h / d_intercept)
-# d_ssr / d_h -> sum over 2(y-h)*(-1)
+# d_ssr / d_h -> sum over 2(y[i])-h[i]))*(-1)
 # d_h / d_intercept = d(intercept + slope * weight) / d_intercept --> 1 
-# so  d_ssr / d_intercept is equal to the sum over 2(y-h)*(-1)  but h = intercept + slope * weight so
-# d_ssr / d_intercept is equal to the sum over 2 ( y - (intercept + slope * weight))*(-1) or equivalently
-# d_ssr / d_intercept is equal to the sum over 2 ( observed_height - (intercept + slope * weight))(-1)
+# so  d_ssr / d_intercept is equal to the sum over 2(y[i])-h[i]))*(-1)  but h = intercept + slope * weight so
+# d_ssr / d_intercept is equal to the sum over 2 ( y[i] - (intercept + slope * weight[i]))*(-1) or equivalently
+# d_ssr / d_intercept is equal to the sum over 2 ( observed_height[i] - (intercept + slope * weight[i]))(-1)
 def d_ssr_to_d_intercept(slope,intercept):
     _observed_height = Height
     _predicted_height = intercept + slope * Weight
     error = _observed_height - _predicted_height
     return 2 * np.sum(error) *(-1)
+
+
+# ssr is the sum over (y[i])-h[i]))^2
+# d_ssr / d_slope is equal by the chain rule to (d_ssr / d_h) * (d_h / d_slope)
+# d_ssr / d_h -> sum over 2(y[i])-h[i]))*(-1)
+# d_h / d_slope = d(intercept + slope * weight) / d_slope --> weight 
+# so  d_ssr / d_intercept is equal to the sum over 2(y[i])-h[i]))*(-1)*weight[i]  but h = intercept + slope * weight so
+# d_ssr / d_intercept is equal to the sum over 2 ( y[i] - (intercept + slope * weight[i]))*(-1)*weight[i] or equivalently
+# d_ssr / d_intercept is equal to the sum over 2 ( observed_height[i] - (intercept + slope * weight[i]))(-1)*weight[i]
+def d_ssr_to_d_slope(slope,intercept):
+     _observed_height = Height
+     _predicted_height = intercept + slope * Weight
+     error = _observed_height - _predicted_height
+     # np.dot : mutliply element by element and than sum
+     return 2 * np.dot(error , Weight) *(-1)    
 
 def print_d_ssr_to_d_intercept(slope):
     # derivative become smaller
@@ -72,33 +86,86 @@ def print_d_ssr_to_d_intercept(slope):
     print("d_ssr/d_intercept @ intercept = 0.95 : ",d_ssr_to_d_intercept(slope,0.95))
     print("d_ssr/d_intercept @ intercept = 1.05 : ",d_ssr_to_d_intercept(slope,1.05))
 
-def gradient_descent(slope):
+def gradient_descent_constant_slope(slope):
     intercept = 0
     learning_rate = 0.1
     step_size = 1 # just a value to enter the loop
     min_step_size = 0.001
     iteration = 0
+    ssr_vec = []
+    intercept_vec = []
 
     while abs(step_size) > min_step_size:
         step_size = d_ssr_to_d_intercept(slope,intercept) * learning_rate
         intercept = intercept - step_size # i did not see a proof for this
+        intercept_vec.append(intercept)
         _predicted_height = predicted_height(intercept,slope)
         _observed_height = Height
         iteration += 1
         ssr = sum_of_square_residual(_predicted_height , _observed_height)
-        plt.plot(Weight, Height,'o',Weight,_predicted_height)
-        plt.grid()
-        plt.title('data set vs intercpt  + slope * weight \nssr : {:.2f} , intercept : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept , iteration,step_size))
-        plt.xlabel("Weight")
-        plt.ylabel("Height")
+        ssr_vec.append(ssr)
+        fig, axs = plt.subplots(2)
+        axs[0].plot(Weight, Height,'o',Weight,_predicted_height)
+        axs[0].grid()
+        axs[0].set_title('data set vs intercpt  + slope * weight \nssr : {:.2f} , intercept : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept , iteration,step_size))
+        axs[0].set_xlabel("Weight")
+        axs[0].set_ylabel("Height")
+        axs[1].plot(intercept_vec,ssr_vec,'o')
+        axs[1].set_title('gradient descent convergence , learn intercept . step size become smaller')
+        axs[1].set_xlabel("intercept")
+        axs[1].set_ylabel("cost function - ssr")
+        axs[1].grid()
+        plt.tight_layout()
         plt.show()
 
+def gradient_descent():
+    intercept = 0
+    slope = 0
+    learning_rate = 0.01
+    step_size = 1 # just a value to enter the loop
+    min_step_size = 0.001
+    iteration = 0
+    ssr_vec = []
+
+    while step_size > min_step_size:
+        step_size_intercept = d_ssr_to_d_intercept(slope,intercept) * learning_rate
+        step_size_slope = d_ssr_to_d_slope(slope,intercept) * learning_rate
+        intercept = intercept - step_size_intercept # i did not see a proof for this
+        slope = slope - step_size_slope
+        step_size = max(abs(step_size_intercept) , abs(step_size_slope))
+        _predicted_height = predicted_height(intercept,slope)
+        _observed_height = Height
+        iteration += 1
+        ssr = sum_of_square_residual(_predicted_height , _observed_height)
+        ssr_vec.append(ssr)
+        print("intercept : {} , slope : {} , step_size : {} , iteration : {}".format(intercept,slope,step_size,iteration))
+
+    fig, axs = plt.subplots(2)
+    axs[0].plot(Weight, Height,'o',Weight,_predicted_height)
+    axs[0].grid()
+    axs[0].set_title('data set vs intercpt  + slope * weight \nssr : {:.2f} , intercept : {:.2f} ,slope : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept,slope , iteration,step_size))
+    axs[0].set_xlabel("Weight")
+    axs[0].set_ylabel("Height")
+    axs[1].plot(ssr_vec)
+    axs[1].set_title('gradient descent convergent , learn intercept and slope')
+    axs[1].set_xlabel('iteration')
+    axs[1].set_ylabel('ssr')
+    axs[1].grid()
+    plt.tight_layout()
+    plt.show()
+
+# part 1 assume slope is 0.64 , compute intercept
+def part1_learn_slope_is_constant():
+    slope = 0.64
+    compute_one_ssr(slope)
+    show_ssr_graph_per_intercept(slope)
+    print_d_ssr_to_d_intercept(slope)
+    gradient_descent_constant_slope(0.64)
+
+def part2_learn():
+    gradient_descent()
 
 # main
 plot_dataset()
-# part 1 assume slope is 0.64 , compute intercept
-slope = 0.64
-compute_one_ssr(slope)
-show_ssr_graph_per_intercept(slope)
-print_d_ssr_to_d_intercept(slope)
-gradient_descent(0.64)
+part1_learn_slope_is_constant()
+part2_learn()
