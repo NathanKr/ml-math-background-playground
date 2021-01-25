@@ -77,26 +77,28 @@ def gradient_descent(slope):
     learning_rate = 0.1
     step_size = 1 # just a value to enter the loop
     min_step_size = 0.001
+    iteration = 0
 
     while abs(step_size) > min_step_size:
         step_size = d_ssr_to_d_intercept(slope,intercept) * learning_rate
         intercept = intercept - step_size # i did not see a proof for this
         _predicted_height = predicted_height(intercept,slope)
         _observed_height = Height
+        iteration += 1
         ssr = sum_of_square_residual(_predicted_height , _observed_height)
         plt.plot(Weight, Height,'o',Weight,_predicted_height)
         plt.grid()
-        plt.title('data set vs intercpt  + slope * weight . ssr : {:.2f} , intercept : {:.2f}'.format(ssr , intercept))
+        plt.title('data set vs intercpt  + slope * weight \nssr : {:.2f} , intercept : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept , iteration,step_size))
         plt.xlabel("Weight")
         plt.ylabel("Height")
         plt.show()
 
 
 # main
-#plot_dataset()
+plot_dataset()
 # part 1 assume slope is 0.64 , compute intercept
 slope = 0.64
-#compute_one_ssr(slope)
-#show_ssr_graph_per_intercept(slope)
-#print_d_ssr_to_d_intercept(slope)
+compute_one_ssr(slope)
+show_ssr_graph_per_intercept(slope)
+print_d_ssr_to_d_intercept(slope)
 gradient_descent(0.64)
