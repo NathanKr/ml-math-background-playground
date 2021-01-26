@@ -99,6 +99,7 @@ def gradient_descent_constant_slope(slope):
     intercept_vec = []
 
     while abs(step_size) > min_step_size:
+        # ------------ this is the gradient descent engine
         step_size = d_ssr_to_d_intercept(slope,intercept) * learning_rate
         intercept = intercept - step_size # i did not see a proof for this
 
