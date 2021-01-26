@@ -13,12 +13,14 @@ python code to do basic math for machine learning
     <li>this is a code i did to follow https://www.youtube.com/watch?v=sDv4f4s2SB8 which fit a linear line based on 3 data points using gradient descent</li>
     <li>The data set is height vs weight shown on a plot. in machine learning this height is actually called y (here it is called observed_height) and weight is x</li>
     <li>the straight line equation is intercept + slope * weight and is called here predeicted_height , in machine learning this is called h</li>
-    <li>The cost function here is ssr which sum the (observed[i] - predicted[i])^2 over all data points</li>
+    <li>The cost function here is ssr (sum of square residual) which sum the (observed[i] - predicted[i])^2 over all data points</li>
     <li>ssr is plot against the intercept for a given value of slope = 0.64 i.e intercept + 0.64 * weight</li>
     <li>the drivative of ssr with respect to intercept is computed and used by gradient descent to compute the value that minimize ssr. The observerd_height (h) is shown per iteration including ssr , step which decrease in every iteration</li>
     <li>it is shown very nicely that when gradient descent is far from the minimal cost the step is large ,but close to the minimal point the step is small</li>
-    <li>the algorithm is stoped when step size is smaller that a common threshold of 0.001. in this case it took 8 iterations</li>
+    <li>the algorithm is stoped when step size is smaller than a common threshold of 0.001. in this case it took 8 iterations</li>
     <li>after learning only intercept while slope kept 0.64 its time to learn slope and intercept</li>
+    <li>chain rule is used to compute the derivative of the cost function with respect to the intercept and the derivative of the cost function with respect to the slope</li>
+    <li>data set and linear curve are ploted and the residual (difference between the actual and estimated) is nicely shown</li>
     </ul>
     </td>
   </tr>
