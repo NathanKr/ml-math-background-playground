@@ -7,7 +7,7 @@ python code to do basic math for machine learning
     <th>Description</th>
   </tr>
   <tr>
-    <td>gradient_descent_intercept.py</td>
+    <td>gradient_descent_lg.py</td>
     <td>
     <ul>
     <li>this is a code i did to follow https://www.youtube.com/watch?v=sDv4f4s2SB8 which fit a linear line based on 3 data points using gradient descent</li>
