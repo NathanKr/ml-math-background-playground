@@ -110,21 +110,23 @@ def gradient_descent_constant_slope(slope):
         ssr = sum_of_square_residual(_predicted_height , _observed_height)
         ssr_vec.append(ssr)
 
+        plot1(intercept_vec,ssr_vec,intercept,slope,ssr , iteration,step_size)
 
-        fig, axs = plt.subplots(2)
-        fig.suptitle('Part 1')
-        plot_with_residual(axs[0],Weight,Height,intercept,slope)
-        axs[0].grid()
-        axs[0].set_title('data set vs intercpt  + slope * weight and residual\nssr : {:.2f} , intercept : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept , iteration,step_size))
-        axs[0].set_xlabel("Weight")
-        axs[0].set_ylabel("Height")
-        axs[1].plot(intercept_vec,ssr_vec,'o',intercept,ssr,'ro')
-        axs[1].set_title('gradient descent convergence , learn intercept . step size become smaller')
-        axs[1].set_xlabel("intercept")
-        axs[1].set_ylabel("cost function - ssr")
-        axs[1].grid()
-        plt.tight_layout()
-        plt.show()
+def plot1(intercept_vec,ssr_vec,intercept,slope,ssr , iteration,step_size):
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Part 1')
+    plot_with_residual(axs[0],Weight,Height,intercept,slope)
+    axs[0].grid()
+    axs[0].set_title('data set vs intercpt  + slope * weight and residual\nssr : {:.2f} , intercept : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept , iteration,step_size))
+    axs[0].set_xlabel("Weight")
+    axs[0].set_ylabel("Height")
+    axs[1].plot(intercept_vec,ssr_vec,'o',intercept,ssr,'ro')
+    axs[1].set_title('gradient descent convergence , learn intercept . step size become smaller')
+    axs[1].set_xlabel("intercept")
+    axs[1].set_ylabel("cost function - ssr")
+    axs[1].grid()
+    plt.tight_layout()
+    plt.show()
 
 def gradient_descent():
     intercept = 0
@@ -136,6 +138,7 @@ def gradient_descent():
     ssr_vec = []
 
     while step_size > min_step_size:
+        # ------------ this is the gradient descent engine
         step_size_intercept = d_ssr_to_d_intercept(slope,intercept) * learning_rate
         step_size_slope = d_ssr_to_d_slope(slope,intercept) * learning_rate
         intercept = intercept - step_size_intercept # i did not see a proof for this
@@ -150,6 +153,9 @@ def gradient_descent():
         ssr_vec.append(ssr)
         print("intercept : {} , slope : {} , step_size : {} , iteration : {}".format(intercept,slope,step_size,iteration))
 
+    plot2(intercept,slope,step_size,iteration,ssr,ssr_vec)
+
+def plot2(intercept,slope,step_size,iteration,ssr,ssr_vec):
     fig, axs = plt.subplots(2)
     plot_with_residual(axs[0],Weight,Height,intercept,slope)
     axs[0].grid()
