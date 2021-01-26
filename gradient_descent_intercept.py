@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from plot_utils import plot_with_residual
 
 # this is based on https://www.youtube.com/watch?v=sDv4f4s2SB8
 
@@ -35,10 +35,13 @@ def show_ssr_graph_per_intercept(slope):
         ssr = sum_of_square_residual(_predicted_height,_observed_height)
         vec_ssr.append(ssr)
 
-    plt.plot(vec_intercept,vec_ssr,'o')    
-    plt.title('ssr vs intercept for slope = {}'.format(slope))
+    index_min_ssr = np.argmin(vec_ssr)
+    ssr_min = vec_ssr[index_min_ssr]    
+    intercept_min = vec_intercept[index_min_ssr]  
+    plt.plot(vec_intercept,vec_ssr,'o',intercept_min,ssr_min,'ro')    
+    plt.title('cost ssr vs intercept for slope = {}'.format(slope))
     plt.xlabel("intercept")
-    plt.ylabel("some of squre residual")
+    plt.ylabel("ssr - sum of squre residual")
     plt.grid()
     plt.show()
 
@@ -106,13 +109,16 @@ def gradient_descent_constant_slope(slope):
         iteration += 1
         ssr = sum_of_square_residual(_predicted_height , _observed_height)
         ssr_vec.append(ssr)
+
+
         fig, axs = plt.subplots(2)
-        axs[0].plot(Weight, Height,'o',Weight,_predicted_height)
+        fig.suptitle('Part 1')
+        plot_with_residual(axs[0],Weight,Height,intercept,slope)
         axs[0].grid()
-        axs[0].set_title('data set vs intercpt  + slope * weight \nssr : {:.2f} , intercept : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept , iteration,step_size))
+        axs[0].set_title('data set vs intercpt  + slope * weight and residual\nssr : {:.2f} , intercept : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept , iteration,step_size))
         axs[0].set_xlabel("Weight")
         axs[0].set_ylabel("Height")
-        axs[1].plot(intercept_vec,ssr_vec,'o')
+        axs[1].plot(intercept_vec,ssr_vec,'o',intercept,ssr,'ro')
         axs[1].set_title('gradient descent convergence , learn intercept . step size become smaller')
         axs[1].set_xlabel("intercept")
         axs[1].set_ylabel("cost function - ssr")
@@ -145,15 +151,16 @@ def gradient_descent():
         print("intercept : {} , slope : {} , step_size : {} , iteration : {}".format(intercept,slope,step_size,iteration))
 
     fig, axs = plt.subplots(2)
-    axs[0].plot(Weight, Height,'o',Weight,_predicted_height)
+    plot_with_residual(axs[0],Weight,Height,intercept,slope)
     axs[0].grid()
-    axs[0].set_title('data set vs intercpt  + slope * weight \nssr : {:.2f} , intercept : {:.2f} ,slope : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept,slope , iteration,step_size))
+    fig.suptitle('Part 2')
+    axs[0].set_title('data set vs intercpt  + slope * weight and residual\nssr : {:.2f} , intercept : {:.2f} ,slope : {:.2f} , iteration : {} , step : {:.4f}'.format(ssr , intercept,slope , iteration,step_size))
     axs[0].set_xlabel("Weight")
     axs[0].set_ylabel("Height")
     axs[1].plot(ssr_vec)
-    axs[1].set_title('gradient descent convergent , learn intercept and slope')
+    axs[1].set_title('gradient descent convergence , learn intercept and slope')
     axs[1].set_xlabel('iteration')
-    axs[1].set_ylabel('ssr')
+    axs[1].set_ylabel('cost function - ssr')
     axs[1].grid()
     plt.tight_layout()
     plt.show()
